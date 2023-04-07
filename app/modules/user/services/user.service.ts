@@ -6,7 +6,7 @@ import { UserRepository } from '@app/modules/user/user.repository';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  public getMe(id: string): Promise<UserEntity> {
+  public findById(id: string): Promise<UserEntity> {
     return this.userRepository.findOneBy({ id: id });
   }
 }

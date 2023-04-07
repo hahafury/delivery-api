@@ -1,16 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  PrimaryColumn,
+  Generated,
+} from 'typeorm';
 import { UserEntity } from './user.entity';
 
 @Entity('user_credentials')
 export class UserCredentialsEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn({ type: 'uuid' })
+  @Generated('uuid')
+  public id: string;
 
   @Column({ nullable: true })
   password: string;
-
-  @Column({ nullable: true })
-  email: string;
 
   @Column({ nullable: true })
   pin: string;

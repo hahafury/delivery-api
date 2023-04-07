@@ -1,5 +1,6 @@
 import * as shuffle from 'crypto-shuffle';
 import * as bcrypt from 'bcrypt';
+import { Logger } from '@nestjs/common';
 
 export abstract class UserPinHelper {
   private static PIN_LENGTH = 4;
@@ -17,6 +18,7 @@ export abstract class UserPinHelper {
     }
 
     const pin: string = pinCodeArray.join('');
+    Logger.log(pin, 'PIN');
     const hashedPin: string = await bcrypt.hash(pin, 10);
 
     return hashedPin;
@@ -26,6 +28,6 @@ export abstract class UserPinHelper {
    * Compare user PIN with hashed PIN
    */
   public static compare(hashedPin: string, pin: string): Promise<boolean> {
-    return bcrypt.compare(hashedPin, pin);
+    return bcrypt.compare(pin, hashedPin);
   }
 }

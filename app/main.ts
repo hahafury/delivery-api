@@ -1,10 +1,24 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import {
+  HttpStatus,
+  INestApplication,
+  ValidationError,
+  ValidationPipe,
+} from '@nestjs/common';
+import {
+  AbstractHttpAdapter,
+  HttpAdapterHost,
+  NestFactory,
+} from '@nestjs/core';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from '@app/common/filters/http-exception.filter';
 import { AppModule } from '@app/app.module';
 import helmet from 'helmet';
 import * as compression from 'compression';
+import * as session from 'express-session';
+import * as express from 'express';
+import * as cookieParser from 'cookie-parser';
+import RedisStore from 'connect-redis';
+import Redis from 'ioredis';
 
 function setupSwagger(app: INestApplication): void {
   const documentBuilder: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
@@ -25,11 +39,35 @@ function setupSwagger(app: INestApplication): void {
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
+  const httpAdapterHost: HttpAdapterHost<AbstractHttpAdapter<any, any, any>> =
+    app.get(HttpAdapterHost);
+  const redisClient: Redis = new Redis(6379, 'cache', {
+    password: process.env.REDIS_PASSWORD,
+  });
+
+  app.use(
+    session({
+      store: new RedisStore({
+        client: redisClient,
+      }),
+      name: process.env.REDIS_AUTH_TOKEN_SESSION,
+      secret: process.env.REDIS_SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        secure: process.env.NODE_ENV === 'production',
+      },
+    }),
+  );
+  app.use(cookieParser());
+  app.use(express.json());
+  app.setGlobalPrefix('api');
   app.enableCors();
   app.use(helmet());
   app.use(compression());
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
   setupSwagger(app);
   await app.listen(3000, () => {
     console.log('Server started');

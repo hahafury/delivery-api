@@ -4,25 +4,27 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  PrimaryColumn,
+  Generated,
 } from 'typeorm';
 import { UserCredentialsEntity } from './user-credentials.entity';
-import { UserRoleEntity } from '@app/modules/user/entities/user-role.entity';
 import { UserRole } from '@app/modules/user/enums/user-role.enum';
 import { AggregateRoot } from '@nestjs/cqrs';
 
 @Entity('user')
 export class UserEntity extends AggregateRoot {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn({ type: 'uuid' })
+  @Generated('uuid')
   public id: string;
+
+  @Column({ default: UserRole.USER })
+  public role: string;
 
   @Column()
   public phone: string;
 
-  @Column({ default: UserRole.USER })
-  public type: string;
-
-  @OneToOne(() => UserRoleEntity, (role) => role.user)
-  public role: UserRoleEntity;
+  @Column({ nullable: true })
+  public email: string;
 
   @OneToOne(() => UserCredentialsEntity, (credentials) => credentials.user, {
     cascade: true,

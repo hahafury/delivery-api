@@ -22,6 +22,9 @@ export class UserAuthService {
       where: {
         phone: phone,
       },
+      relations: {
+        credentials: true,
+      },
     });
 
     if (!user) {
@@ -35,6 +38,14 @@ export class UserAuthService {
       return pin;
     }
 
+    await this.userRepository.save({
+      ...user,
+      credentials: {
+        ...user.credentials,
+        pin: pin,
+      },
+    });
+
     return pin;
   }
 
@@ -42,6 +53,9 @@ export class UserAuthService {
     const user: UserEntity = await this.userRepository.findOne({
       where: {
         phone: phone,
+      },
+      relations: {
+        credentials: true,
       },
     });
 

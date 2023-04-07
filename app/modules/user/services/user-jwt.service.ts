@@ -45,9 +45,10 @@ export class UserJwtService {
 
   public async verifyRefreshToken(token: string): Promise<TokenPayload> {
     try {
-      const tokenPayload = await this.jwtService.verifyAsync(token, {
-        secret: JWT_CONFIG.REFRESH_TOKEN_SECRET,
-      });
+      const tokenPayload: TokenPayload =
+        await this.jwtService.verifyAsync<TokenPayload>(token, {
+          secret: JWT_CONFIG.REFRESH_TOKEN_SECRET,
+        });
       return tokenPayload;
     } catch (error) {
       throw new InvalidTokenException();

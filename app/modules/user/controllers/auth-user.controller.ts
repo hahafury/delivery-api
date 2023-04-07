@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Req, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { UserAuthService } from '@app/modules/user/services/user-auth.service';
 import { UserAuthLoginViaPinDto } from '@app/modules/user/dto/user-auth-login-via-pin.dto';
@@ -10,14 +17,13 @@ import { UserAuthRefreshAuthorizationDto } from '@app/modules/user/dto/user-auth
 export class AuthUserController {
   constructor(private readonly userAuthService: UserAuthService) {}
 
-  @Post('/send/pin')
-  public sendPin(
-    @Body(ValidationPipe) data: UserAuthSendPinDto,
-  ): Promise<string> {
+  @Post('send/pin')
+  @UsePipes(ValidationPipe)
+  public sendPin(@Body() data: UserAuthSendPinDto): Promise<string> {
     return this.userAuthService.sendPin(data.phone);
   }
 
-  @Post('/login/pin')
+  @Post('login/pin')
   public async loginViaPin(
     @Req() req: Request,
     @Body(ValidationPipe) data: UserAuthLoginViaPinDto,
@@ -32,7 +38,7 @@ export class AuthUserController {
     };
   }
 
-  @Post('/refresh')
+  @Post('refresh')
   public async refreshAccess(
     @Req() req: Request,
     @Body(ValidationPipe) data: UserAuthRefreshAuthorizationDto,

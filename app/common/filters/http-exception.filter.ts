@@ -2,60 +2,45 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
+  HttpAdapterHost,
   HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { HttpArgumentsHost } from '@nestjs/common/interfaces';
+import { ErrorResponse } from '@app/common/interfaces/error-response.interface';
 
 @Catch()
 export class HttpExceptionFilter
   implements ExceptionFilter<HttpException | Error>
 {
+  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+
   private readonly logger = new Logger(HttpExceptionFilter.name);
 
-  catch(
-    exception: HttpException | Error,
-    host: ArgumentsHost,
-  ): Response<string, Record<string, string>> {
+  catch(exception: HttpException | Error, host: ArgumentsHost): any {
     this.logger.error(exception.message, exception.stack);
-    const request: Request = host.switchToHttp().getRequest<Request>();
-    const response: Response = host.switchToHttp().getResponse<Response>();
-
+    const { httpAdapter } = this.httpAdapterHost;
+    const ctx: HttpArgumentsHost = host.switchToHttp();
     if (exception instanceof HttpException) {
-      this.logger.error(
-        {
-          request: {
-            method: request.method,
-            url: request.url,
-            body: request.body,
-          },
-        },
-        exception.stack,
+      const responseBody: ErrorResponse = {
+        status: 'error',
+        message: exception.message,
+      };
+      return httpAdapter.reply(
+        ctx.getResponse(),
+        responseBody,
+        exception.getStatus(),
       );
-      if (exception.getStatus() === HttpStatus.INTERNAL_SERVER_ERROR)
-        return response.status(500).json();
-      if (
-        exception.getStatus() === 404 &&
-        exception.message.split(' ')[0] === 'Cannot' &&
-        exception.message.split(' ').length === 3
-      )
-        return response.status(404).json();
-      return response
-        .status(exception.getStatus())
-        .json(exception.getResponse());
     }
-
-    this.logger.error(
-      {
-        request: {
-          method: request.method,
-          url: request.url,
-          body: request.body,
-        },
-      },
-      exception.stack,
+    const responseBody: ErrorResponse = {
+      status: 'error',
+      message: exception.message,
+    };
+    return httpAdapter.reply(
+      ctx.getResponse(),
+      responseBody,
+      HttpStatus.INTERNAL_SERVER_ERROR,
     );
-    return response.status(500).json();
   }
 }
