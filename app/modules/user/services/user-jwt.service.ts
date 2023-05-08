@@ -6,7 +6,7 @@ import { JWT_CONFIG } from '../jwt.config';
 
 @Injectable()
 export class UserJwtService {
-  constructor(private jwtService: JwtService) {}
+  constructor(private readonly jwtService: JwtService) {}
 
   public async generateAccessToken(payload: TokenPayload): Promise<string> {
     return this.jwtService.signAsync(payload, {

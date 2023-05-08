@@ -1,11 +1,15 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { UserEntity } from '@app/modules/user/entities/user.entity';
-import { UserCredentialsEntity } from '@app/modules/user/entities/user-credentials.entity';
+import { UserEntity, UserCredentialsEntity } from '@app/modules/user/entities';
 import { CategoryEntity } from '@app/modules/category/category.entity';
-import { ProductEntity } from '@app/modules/product/entities/product.entity';
-import { ProductWeightEntity } from '@app/modules/product/entities/product-weight.entity';
-import { ProductImagesEntity } from '@app/modules/product/entities/product-images.entity';
+import {
+  ProductContentEntity,
+  ProductNutritionalValueEntity,
+  ProductImagesEntity,
+  ProductWeightEntity,
+  ProductEntity,
+  ProductDiscountEntity,
+} from '@app/modules/product/entities';
 
 export const DATABASE_CONFIG: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -21,6 +25,9 @@ export const DATABASE_CONFIG: TypeOrmModuleOptions = {
     ProductEntity,
     ProductWeightEntity,
     ProductImagesEntity,
+    ProductNutritionalValueEntity,
+    ProductContentEntity,
+    ProductDiscountEntity,
   ],
   migrationsTableName: 'migration',
   synchronize: true,

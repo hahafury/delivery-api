@@ -12,11 +12,13 @@ export class BaseEntity {
   public id: string;
 
   @CreateDateColumn()
-  public created_at: Date;
+  public createdAt: Date;
 
   @UpdateDateColumn()
-  public updated_at: Date;
+  public updatedAt: Date;
 
-  @DeleteDateColumn()
-  public deleted_at: Date;
+  @DeleteDateColumn({
+    select: false,
+  })
+  public deletedAt: Date;
 }
