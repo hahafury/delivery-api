@@ -9,8 +9,8 @@ import { ProductModule } from '@app/modules/product';
   imports: [
     TypeOrmModule.forRoot(DATABASE_CONFIG),
     UserModule,
-    CategoryModule,
-    ProductModule,
+    // CategoryModule,
+    // ProductModule,
   ],
 })
 export class AppModule {}
