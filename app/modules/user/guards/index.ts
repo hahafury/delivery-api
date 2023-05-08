@@ -1,2 +1,2 @@
 export * from './only-authorized.guard';
-export * from './role.guard';
+export * from './user-role.guard';

@@ -1,6 +1,6 @@
 import { IsInt } from 'class-validator';
 
-export class NutritionalValueDto {
+export class ProductNutritionalValueDto {
   @IsInt()
   public readonly energy: number;
 
