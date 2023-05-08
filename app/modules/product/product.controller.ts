@@ -6,16 +6,24 @@ import {
   Param,
   Query,
   Body,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import {
   Pagination,
   PAGINATION_DEFAULT_PROPERTIES,
 } from '@app/common/helpers/pagination';
-import { ProductEntity } from '@app/modules/product/entities/product.entity';
-import { ProductIndexQueryDto } from './dto/product-index-query.dto';
+import { UserRoles } from '@app/modules/user/decorators';
+import { UserRole } from '@app/modules/user/enums';
+import { OnlyAuthorizedGuard, UserRoleGuard } from '@app/modules/user/guards';
+import { ProductEntity } from './entities';
+import {
+  CreateProductDto,
+  ProductIndexQueryDto,
+  UpdateProductDto,
+} from './dto';
 import { ProductService } from './product.service';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Controller('product')
 export class ProductController {
@@ -44,17 +52,28 @@ export class ProductController {
 
   @Get(':id')
   public show(@Param('id') id: string): Promise<ProductEntity> {
-    return this.productService.findById(id);
+    return this.productService.findOneBy({ id: id });
   }
 
+  @UserRoles(UserRole.ADMIN)
+  @UseGuards(OnlyAuthorizedGuard, UserRoleGuard)
+  @Post()
+  public create(@Body() data: CreateProductDto): Promise<ProductEntity> {
+    return this.productService.create(data);
+  }
+
+  @UserRoles(UserRole.ADMIN)
+  @UseGuards(OnlyAuthorizedGuard, UserRoleGuard)
   @Put(':id')
   public update(
     @Param('id') id: string,
-    @Body() data: QueryDeepPartialEntity<ProductEntity>,
+    @Body() data: UpdateProductDto,
   ): Promise<UpdateResult> {
     return this.productService.update({ id: id }, data);
   }
 
+  @UserRoles(UserRole.ADMIN)
+  @UseGuards(OnlyAuthorizedGuard, UserRoleGuard)
   @Delete(':id')
   public delete(@Param('id') id: string): Promise<DeleteResult> {
     return this.productService.delete({ id: id });

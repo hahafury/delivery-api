@@ -1,13 +1,13 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { BaseEntity } from '@app/common/base/base.entity';
-import { ProductEntity } from '@app/modules/product/entities/product.entity';
+import { BaseWithHiddenPrimaryEntity } from '@app/common/base/base-with-hidden-primary.entity';
+import { ProductEntity } from './product.entity';
 
 @Entity('product_images')
-export class ProductImagesEntity extends BaseEntity {
+export class ProductImagesEntity extends BaseWithHiddenPrimaryEntity {
   @Column()
   public uri: string;
 
-  @Column()
+  @Column({ nullable: true })
   public alt: string;
 
   @ManyToOne(() => ProductEntity, (product) => product.images)
