@@ -3,13 +3,13 @@ import { IsOptional, IsString } from 'class-validator';
 export class ProductIndexQueryDto {
   @IsOptional()
   @IsString()
-  public limit: string | undefined;
+  public readonly limit: string | undefined;
 
   @IsOptional()
   @IsString()
-  public page: string | undefined;
+  public readonly page: string | undefined;
 
   @IsOptional()
   @IsString()
-  public category: string | undefined;
+  public readonly category: string | undefined;
 }
