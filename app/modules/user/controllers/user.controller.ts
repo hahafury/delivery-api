@@ -12,11 +12,12 @@ export class UserController {
   @Get('me')
   @UseGuards(OnlyAuthorizedGuard)
   public getMe(@CurrentUser() tokenPayload: TokenPayload): Promise<UserEntity> {
-    return this.userService.findOne({ id: tokenPayload.id });
+    return this.userService.findOneBy({ id: tokenPayload.id });
   }
 
   @Get(':id')
+  @UseGuards(OnlyAuthorizedGuard)
   public show(@Param('id') id: string): Promise<UserEntity> {
-    return this.userService.findOne({ id: id });
+    return this.userService.findOneBy({ id: id });
   }
 }

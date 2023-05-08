@@ -22,6 +22,7 @@ export class HttpExceptionFilter
     this.logger.error(exception.message, exception.stack);
     const { httpAdapter } = this.httpAdapterHost;
     const ctx: HttpArgumentsHost = host.switchToHttp();
+
     if (exception instanceof HttpException) {
       const responseBody: ErrorResponse = {
         status: 'error',
@@ -33,6 +34,7 @@ export class HttpExceptionFilter
         exception.getStatus(),
       );
     }
+
     const responseBody: ErrorResponse = {
       status: 'error',
       message: exception.message,

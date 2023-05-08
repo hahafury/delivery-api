@@ -1,12 +1,14 @@
-import { INestApplication } from '@nestjs/common';
+import {
+  BadRequestException,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   AbstractHttpAdapter,
   HttpAdapterHost,
   NestFactory,
 } from '@nestjs/core';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import { HttpExceptionFilter } from '@app/common/filters/http-exception.filter';
-import { AppModule } from '@app/app.module';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import * as session from 'express-session';
@@ -14,7 +16,9 @@ import * as express from 'express';
 import * as cookieParser from 'cookie-parser';
 import RedisStore from 'connect-redis';
 import Redis from 'ioredis';
-import { ResponseInterceptor } from '@app/common/interceptors/response.interceptor';
+import { ResponseInterceptor } from '@app/common/interceptors';
+import { HttpExceptionFilter } from '@app/common/filters';
+import { AppModule } from './app.module';
 
 function setupSwagger(app: INestApplication): void {
   const documentBuilder: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
@@ -65,6 +69,23 @@ async function bootstrap(): Promise<void> {
   app.use(compression());
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
   app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (errors): BadRequestException => {
+        return new BadRequestException(
+          errors
+            .map((error) => {
+              return Object.entries(
+                error.constraints ?? error.children[0].constraints,
+              )
+                .map((entry) => entry[1])
+                .join();
+            })
+            .join(', '),
+        );
+      },
+    }),
+  );
   setupSwagger(app);
   await app.listen(3000, () => {
     console.log('Server started');

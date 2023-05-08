@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Req,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { UserAuthService } from '../services';
 import {
@@ -20,7 +13,6 @@ export class AuthUserController {
   constructor(private readonly userAuthService: UserAuthService) {}
 
   @Post('send/pin')
-  @UsePipes(ValidationPipe)
   public sendPin(@Body() data: UserAuthSendPinDto): Promise<string> {
     return this.userAuthService.sendPin(data.phone);
   }
@@ -28,7 +20,7 @@ export class AuthUserController {
   @Post('login/pin')
   public async loginViaPin(
     @Req() req: Request,
-    @Body(ValidationPipe) data: UserAuthLoginViaPinDto,
+    @Body() data: UserAuthLoginViaPinDto,
   ): Promise<{ refreshToken: string }> {
     const tokens: Tokens = await this.userAuthService.loginViaPin(
       data.phone,
@@ -43,7 +35,7 @@ export class AuthUserController {
   @Post('refresh')
   public async refreshAccess(
     @Req() req: Request,
-    @Body(ValidationPipe) data: UserAuthRefreshAuthorizationDto,
+    @Body() data: UserAuthRefreshAuthorizationDto,
   ): Promise<void> {
     req.session.authorization = await this.userAuthService.refreshAccessToken(
       data.refreshToken,

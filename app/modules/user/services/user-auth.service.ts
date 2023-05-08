@@ -5,9 +5,9 @@ import { InvalidCredentialsException } from '@app/common/exceptions/invalid-cred
 import { UserRepository } from '../user.repository';
 import { UserPinHelper } from '../helpers';
 import { UserEntity } from '../entities';
-import { UserJwtService } from '../services';
 import { Tokens } from '../interfaces';
 import { TokenPayload } from '../interfaces';
+import { UserJwtService } from './user-jwt.service';
 
 @Injectable()
 export class UserAuthService {
@@ -26,7 +26,6 @@ export class UserAuthService {
         credentials: true,
       },
     });
-
     if (!user) {
       await this.userRepository.save({
         phone: phone,
@@ -37,7 +36,6 @@ export class UserAuthService {
 
       return pin;
     }
-
     await this.userRepository.save({
       ...user,
       credentials: {
@@ -45,7 +43,6 @@ export class UserAuthService {
         pin: pin,
       },
     });
-
     return pin;
   }
 
