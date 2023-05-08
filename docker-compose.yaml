@@ -41,16 +41,6 @@ services:
     volumes:
       - cache:/data
 
-  localstack:
-    image: localstack/localstack
-    ports:
-      - 4566:4566
-    environment:
-      - SERVICES=ses,sqs,sns
-      - AWS_DEFAULT_REGION=ap-northeast-2
-    volumes:
-      - ./.aws:/docker-entrypoint-initaws.d:ro
-
 volumes:
   cache:
     driver: local

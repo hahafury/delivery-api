@@ -1,18 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  UseGuards,
-  ValidationPipe,
-} from '@nestjs/common';
-import { UserService } from '@app/modules/user/services/user.service';
-import { CurrentUser } from '@app/modules/user/decorators/current-user.decorator';
-import { TokenPayload } from '@app/modules/user/interfaces/token-payload.interface';
-import { UserEntity } from '@app/modules/user/entities/user.entity';
-import { OnlyAuthorizedGuard } from '@app/modules/user/guards/only-authorized.guard';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { UserService } from '../services';
+import { CurrentUser } from '../decorators';
+import { TokenPayload } from '../interfaces';
+import { UserEntity } from '../entities';
+import { OnlyAuthorizedGuard } from '../guards';
 
 @Controller('user')
 export class UserController {
@@ -21,11 +12,11 @@ export class UserController {
   @Get('me')
   @UseGuards(OnlyAuthorizedGuard)
   public getMe(@CurrentUser() tokenPayload: TokenPayload): Promise<UserEntity> {
-    return this.userService.findById(tokenPayload.id);
+    return this.userService.findOne({ id: tokenPayload.id });
   }
 
   @Get(':id')
-  public getUserById(@Param('id') id: string): Promise<UserEntity> {
-    return this.userService.findById(id);
+  public show(@Param('id') id: string): Promise<UserEntity> {
+    return this.userService.findOne({ id: id });
   }
 }

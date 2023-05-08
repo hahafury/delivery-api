@@ -1,19 +1,9 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  PrimaryColumn,
-  Generated,
-} from 'typeorm';
+import { Entity, Column, OneToOne } from 'typeorm';
+import { BaseWithHiddenPrimaryEntity } from '@app/common/base';
 import { UserEntity } from './user.entity';
 
 @Entity('user_credentials')
-export class UserCredentialsEntity {
-  @PrimaryColumn({ type: 'uuid' })
-  @Generated('uuid')
-  public id: string;
-
+export class UserCredentialsEntity extends BaseWithHiddenPrimaryEntity {
   @Column({ nullable: true })
   password: string;
 
