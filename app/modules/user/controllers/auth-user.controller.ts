@@ -7,11 +7,13 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { UserAuthService } from '@app/modules/user/services/user-auth.service';
-import { UserAuthLoginViaPinDto } from '@app/modules/user/dto/user-auth-login-via-pin.dto';
-import { Tokens } from '@app/modules/user/interfaces/tokens.interface';
-import { UserAuthSendPinDto } from '@app/modules/user/dto/user-auth-send-pin.dto';
-import { UserAuthRefreshAuthorizationDto } from '@app/modules/user/dto/user-auth-refresh-authorization.dto';
+import { UserAuthService } from '../services';
+import {
+  UserAuthLoginViaPinDto,
+  UserAuthSendPinDto,
+  UserAuthRefreshAuthorizationDto,
+} from '../dto';
+import { Tokens } from '../interfaces';
 
 @Controller('auth')
 export class AuthUserController {

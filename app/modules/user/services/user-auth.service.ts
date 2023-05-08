@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from '@app/modules/user/user.repository';
-import { UserPinHelper } from '@app/modules/user/helpers/user-pin.helper';
-import { UserEntity } from '@app/modules/user/entities/user.entity';
 import { UserNotFoundException } from '@app/common/exceptions/user-not-found.exception';
 import { InvalidCredentialsException } from '@app/common/exceptions/invalid-credentials.exception';
-import { UserJwtService } from '@app/modules/user/services/user-jwt.service';
-import { Tokens } from '@app/modules/user/interfaces/tokens.interface';
-import { TokenPayload } from '@app/modules/user/interfaces/token-payload.interface';
+import { UserRepository } from '../user.repository';
+import { UserPinHelper } from '../helpers';
+import { UserEntity } from '../entities';
+import { UserJwtService } from '../services';
+import { Tokens } from '../interfaces';
+import { TokenPayload } from '../interfaces';
 
 @Injectable()
 export class UserAuthService {

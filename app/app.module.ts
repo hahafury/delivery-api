@@ -1,14 +1,18 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from '@app/modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DATABASE_CONFIG } from '@app/database/database.config';
+import { UserModule } from '@app/modules/user/user.module';
+import { DATABASE_CONFIG } from '@app/common/config/database.config';
+import { CategoryModule } from '@app/modules/category/category.module';
+import { ProductModule } from '@app/modules/product/product.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({ ...DATABASE_CONFIG }),
+    TypeOrmModule.forRoot(DATABASE_CONFIG),
     UserModule,
+    CategoryModule,
+    ProductModule,
   ],
 })
 export class AppModule {}

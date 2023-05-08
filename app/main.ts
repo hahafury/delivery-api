@@ -1,9 +1,4 @@
-import {
-  HttpStatus,
-  INestApplication,
-  ValidationError,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import {
   AbstractHttpAdapter,
   HttpAdapterHost,
@@ -19,6 +14,7 @@ import * as express from 'express';
 import * as cookieParser from 'cookie-parser';
 import RedisStore from 'connect-redis';
 import Redis from 'ioredis';
+import { ResponseInterceptor } from '@app/common/interceptors/response.interceptor';
 
 function setupSwagger(app: INestApplication): void {
   const documentBuilder: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
@@ -68,6 +64,7 @@ async function bootstrap(): Promise<void> {
   app.use(helmet());
   app.use(compression());
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
+  app.useGlobalInterceptors(new ResponseInterceptor());
   setupSwagger(app);
   await app.listen(3000, () => {
     console.log('Server started');

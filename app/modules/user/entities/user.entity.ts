@@ -1,22 +1,10 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-  PrimaryColumn,
-  Generated,
-} from 'typeorm';
-import { UserCredentialsEntity } from './user-credentials.entity';
+import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
 import { UserRole } from '@app/modules/user/enums/user-role.enum';
-import { AggregateRoot } from '@nestjs/cqrs';
+import { BaseEntity } from '@app/common/base';
+import { UserCredentialsEntity } from './user-credentials.entity';
 
 @Entity('user')
-export class UserEntity extends AggregateRoot {
-  @PrimaryColumn({ type: 'uuid' })
-  @Generated('uuid')
-  public id: string;
-
+export class UserEntity extends BaseEntity {
   @Column({ default: UserRole.USER })
   public role: string;
 

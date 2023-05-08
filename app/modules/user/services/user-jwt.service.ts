@@ -1,9 +1,8 @@
 import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
-import { Tokens } from '@app/modules/user/interfaces/tokens.interface';
-import { TokenPayload } from '@app/modules/user/interfaces/token-payload.interface';
-import { JWT_CONFIG } from '@app/modules/user/jwt.config';
 import { InvalidTokenException } from '@app/common/exceptions/invalid-token.exception';
+import { TokenPayload, Tokens } from '../interfaces';
+import { JWT_CONFIG } from '../jwt.config';
 
 @Injectable()
 export class UserJwtService {
@@ -31,25 +30,21 @@ export class UserJwtService {
     };
   }
 
-  public async verifyAccessToken(accessToken: string): Promise<TokenPayload> {
+  public verifyAccessToken(accessToken: string): Promise<TokenPayload> {
     try {
-      const tokenPayload: TokenPayload =
-        await this.jwtService.verifyAsync<TokenPayload>(accessToken, {
-          secret: JWT_CONFIG.ACCESS_TOKEN_SECRET,
-        });
-      return tokenPayload;
+      return this.jwtService.verifyAsync<TokenPayload>(accessToken, {
+        secret: JWT_CONFIG.ACCESS_TOKEN_SECRET,
+      });
     } catch (error) {
       throw new InvalidTokenException();
     }
   }
 
-  public async verifyRefreshToken(token: string): Promise<TokenPayload> {
+  public verifyRefreshToken(token: string): Promise<TokenPayload> {
     try {
-      const tokenPayload: TokenPayload =
-        await this.jwtService.verifyAsync<TokenPayload>(token, {
-          secret: JWT_CONFIG.REFRESH_TOKEN_SECRET,
-        });
-      return tokenPayload;
+      return this.jwtService.verifyAsync<TokenPayload>(token, {
+        secret: JWT_CONFIG.REFRESH_TOKEN_SECRET,
+      });
     } catch (error) {
       throw new InvalidTokenException();
     }

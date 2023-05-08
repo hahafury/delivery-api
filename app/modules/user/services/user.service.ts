@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { UserEntity } from '@app/modules/user/entities/user.entity';
-import { UserRepository } from '@app/modules/user/user.repository';
+import { FindOptionsWhere } from 'typeorm';
+import { UserEntity } from '../entities';
+import { UserRepository } from '../user.repository';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  public findById(id: string): Promise<UserEntity> {
-    return this.userRepository.findOneBy({ id: id });
+  public findOne(where: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
+    return this.userRepository.findOneBy(where);
   }
 }
