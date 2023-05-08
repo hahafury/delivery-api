@@ -1,14 +1,20 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { INestApplication } from '@nestjs/common';
+import {
+  AbstractHttpAdapter,
+  HttpAdapterHost,
+  NestFactory,
+} from '@nestjs/core';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-
-import { LoggingInterceptor } from '@libs/logging/logging.interceptor';
-import { HttpExceptionFilter } from '@libs/filters/http-exception.filter';
-
-import { Config } from '@app/app.config';
+import { HttpExceptionFilter } from '@app/common/filters/http-exception.filter';
 import { AppModule } from '@app/app.module';
 import helmet from 'helmet';
-import compression from 'compression';
+import * as compression from 'compression';
+import * as session from 'express-session';
+import * as express from 'express';
+import * as cookieParser from 'cookie-parser';
+import RedisStore from 'connect-redis';
+import Redis from 'ioredis';
+import { ResponseInterceptor } from '@app/common/interceptors/response.interceptor';
 
 function setupSwagger(app: INestApplication): void {
   const documentBuilder: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()
@@ -18,22 +24,51 @@ function setupSwagger(app: INestApplication): void {
     .addBasicAuth()
     .build();
 
-  const document = SwaggerModule.createDocument(app, documentBuilder);
+  const document: OpenAPIObject = SwaggerModule.createDocument(
+    app,
+    documentBuilder,
+  );
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
   });
 }
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+async function bootstrap(): Promise<void> {
+  const app: INestApplication = await NestFactory.create(AppModule);
+  const httpAdapterHost: HttpAdapterHost<AbstractHttpAdapter<any, any, any>> =
+    app.get(HttpAdapterHost);
+  const redisClient: Redis = new Redis(6379, 'cache', {
+    password: process.env.REDIS_PASSWORD,
+  });
+
+  app.use(
+    session({
+      store: new RedisStore({
+        client: redisClient,
+      }),
+      name: process.env.REDIS_AUTH_TOKEN_SESSION,
+      secret: process.env.REDIS_SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        secure: process.env.NODE_ENV === 'production',
+      },
+    }),
+  );
+  app.use(cookieParser());
+  app.use(express.json());
+  app.setGlobalPrefix('api');
   app.enableCors();
   app.use(helmet());
   app.use(compression());
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalInterceptors(new LoggingInterceptor());
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
+  app.useGlobalInterceptors(new ResponseInterceptor());
   setupSwagger(app);
-  await app.listen(Config.PORT);
+  await app.listen(3000, () => {
+    console.log('Server started');
+  });
 }
 
 bootstrap();

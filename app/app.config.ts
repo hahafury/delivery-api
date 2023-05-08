@@ -52,7 +52,7 @@ class Configuration {
   readonly EMAIL = process.env.EMAIL as string;
 
   @IsInt()
-  readonly PORT = Number(process.env.PORT);
+  readonly PORT = Number(3000);
 
   constructor() {
     const error: ValidationError[] = validateSync(this);
