@@ -1,6 +1,6 @@
 import { Generated, PrimaryColumn } from 'typeorm';
 
-export class BaseOneToOneEntity {
+export class BaseWithHiddenPrimaryEntity {
   @PrimaryColumn({ type: 'uuid', select: false })
   @Generated('uuid')
   public id: string;
