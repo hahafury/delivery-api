@@ -5,8 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserNotFoundException } from '@app/common/exceptions';
 import { Request } from 'express';
+import { UserNotFoundException } from '../exceptions';
 import { UserService } from '../services';
 import { TokenPayload } from '../interfaces';
 import { UserEntity } from '../entities';

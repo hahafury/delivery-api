@@ -1,8 +1,4 @@
-import {
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments,
-} from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 
 export function IsBiggerThan(
   value: number,

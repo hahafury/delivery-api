@@ -2,6 +2,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -12,6 +14,7 @@ import { ProductImagesEntity } from './product-images.entity';
 import { ProductWeightEntity } from './product-weight.entity';
 import { ProductNutritionalValueEntity } from './product-nutritional-value.entity';
 import { ProductDiscountEntity } from '@app/modules/product/entities/product-discount.entity';
+import { UserEntity } from '@app/modules/user/entities';
 
 @Entity('product')
 export class ProductEntity extends BaseEntity {
@@ -61,4 +64,10 @@ export class ProductEntity extends BaseEntity {
   })
   @JoinColumn()
   public discount: ProductDiscountEntity;
+
+  @ManyToMany(() => UserEntity)
+  @JoinTable({
+    name: 'user_favorite_products',
+  })
+  public favoriteByUsers: UserEntity[];
 }
