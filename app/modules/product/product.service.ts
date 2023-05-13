@@ -21,7 +21,6 @@ export class ProductService {
     where?: FindOptionsWhere<ProductEntity>,
     order?: FindOptionsOrder<ProductEntity>,
   ): Promise<Pagination<ProductEntity>> {
-    console.log(order);
     const [results, total] = await this.productRepository.findAndCount({
       take: options.limit,
       skip: (options.page - 1) * options.limit,
