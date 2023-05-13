@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
-import { InvalidTokenException } from '@app/common/exceptions/invalid-token.exception';
+import { InvalidTokenException } from '../exceptions';
 import { TokenPayload, Tokens } from '../interfaces';
 import { JWT_CONFIG } from '../jwt.config';
 

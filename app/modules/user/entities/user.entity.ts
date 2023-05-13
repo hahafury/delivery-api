@@ -1,6 +1,14 @@
-import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  OneToOne,
+  JoinColumn,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { UserRole } from '@app/modules/user/enums/user-role.enum';
 import { BaseEntity } from '@app/common/base';
+import { ProductEntity } from '@app/modules/product/entities';
 import { UserCredentialsEntity } from './user-credentials.entity';
 
 @Entity('user')
@@ -19,4 +27,10 @@ export class UserEntity extends BaseEntity {
   })
   @JoinColumn()
   public credentials: UserCredentialsEntity;
+
+  @ManyToMany(() => ProductEntity, { eager: true })
+  @JoinTable({
+    name: 'user_favorite_products',
+  })
+  public favoriteProducts: ProductEntity[];
 }
