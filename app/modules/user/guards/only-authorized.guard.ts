@@ -1,12 +1,16 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { UserAuthService } from '@app/modules/user/services/user-auth.service';
 import { Request } from 'express';
-import { TokenNotFoundException } from '@app/common/exceptions/token-not-found.exception';
-import { TokenPayload } from '@app/modules/user/interfaces/token-payload.interface';
+import { UserService, UserAuthService } from '../services';
+import { TokenPayload } from '../interfaces';
+import { TokenNotFoundException, UserNotFoundException } from '../exceptions';
+import { UserEntity } from '../entities';
 
 @Injectable()
 export class OnlyAuthorizedGuard implements CanActivate {
-  constructor(private readonly userAuthService: UserAuthService) {}
+  constructor(
+    private readonly userAuthService: UserAuthService,
+    private readonly userService: UserService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest<Request>();
@@ -16,7 +20,13 @@ export class OnlyAuthorizedGuard implements CanActivate {
     }
     const tokenPayload: TokenPayload =
       await this.userAuthService.verifyAccessToken(authToken);
-    request.user = tokenPayload;
+    const user: UserEntity = await this.userService.findOneBy({
+      id: tokenPayload.id,
+    });
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+    request.user = user;
     return true;
   }
 }

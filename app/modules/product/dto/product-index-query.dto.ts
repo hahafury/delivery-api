@@ -1,15 +1,37 @@
-import { IsOptional, IsString } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsOptional,
+  IsUUID,
+  IsObject,
+  IsNotEmptyObject,
+} from 'class-validator';
+import { BaseIndexQueryDto } from '@app/common/base';
+import { Transform } from 'class-transformer';
+import {
+  TransformedOrderByParam,
+  transformOrderByParamToObject,
+  transformStringArrayToNumberArray,
+} from '@app/common/transforms';
+import { IsOrderBy } from '@app/common/validators';
 
-export class ProductIndexQueryDto {
+export class ProductIndexQueryDto extends BaseIndexQueryDto {
   @IsOptional()
-  @IsString()
-  public readonly limit: string | undefined;
+  @IsUUID()
+  public readonly category?: string;
 
+  @Transform(transformStringArrayToNumberArray)
   @IsOptional()
-  @IsString()
-  public readonly page: string | undefined;
+  @IsArray()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
+  public readonly price?: (number | null)[];
 
+  @Transform(transformOrderByParamToObject)
   @IsOptional()
-  @IsString()
-  public readonly category: string | undefined;
+  @IsObject()
+  @IsNotEmptyObject()
+  @IsOrderBy(['price'])
+  public readonly orderBy?: TransformedOrderByParam<'price'>;
 }

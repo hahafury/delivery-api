@@ -11,8 +11,8 @@ export class UserController {
 
   @Get('me')
   @UseGuards(OnlyAuthorizedGuard)
-  public getMe(@CurrentUser() tokenPayload: TokenPayload): Promise<UserEntity> {
-    return this.userService.findOneBy({ id: tokenPayload.id });
+  public getMe(@CurrentUser() user: UserEntity): UserEntity {
+    return user;
   }
 
   @Get(':id')

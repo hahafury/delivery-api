@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UserNotFoundException } from '@app/common/exceptions/user-not-found.exception';
-import { InvalidCredentialsException } from '@app/common/exceptions/invalid-credentials.exception';
+import {
+  InvalidCredentialsException,
+  UserNotFoundException,
+} from '../exceptions';
 import { UserRepository } from '../user.repository';
 import { UserPinHelper } from '../helpers';
 import { UserEntity } from '../entities';
