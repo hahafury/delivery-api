@@ -16,26 +16,24 @@ export class IsOrderByConstraint implements ValidatorConstraintInterface {
     args: ValidationArguments,
   ): Promise<any> {
     const [allowedProperties = []] = args.constraints;
-    Object.entries(value).forEach(
-      ([property, orderByValue]: [string, string]): void => {
-        const isPropertyAllowed: boolean = allowedProperties.some(
-          (allowedProperty: string): boolean => {
-            return allowedProperty === property;
-          },
+    Object.entries(value).forEach(([property, orderByValue]): void => {
+      const isPropertyAllowed: boolean = allowedProperties.some(
+        (allowedProperty) => {
+          return allowedProperty === property;
+        },
+      );
+      if (!isPropertyAllowed) {
+        throw new BadRequestException(`Property ${property} is not allowed!`);
+      }
+      if (
+        orderByValue !== DatabaseOrderByValue.ASC &&
+        orderByValue !== DatabaseOrderByValue.DESC
+      ) {
+        throw new BadRequestException(
+          `Order value ${orderByValue} is not allowed!`,
         );
-        if (!isPropertyAllowed) {
-          throw new BadRequestException(`Property ${property} is not allowed!`);
-        }
-        if (
-          orderByValue !== DatabaseOrderByValue.ASC &&
-          orderByValue !== DatabaseOrderByValue.DESC
-        ) {
-          throw new BadRequestException(
-            `Order value ${orderByValue} is not allowed!`,
-          );
-        }
-      },
-    );
+      }
+    });
     return true;
   }
 }

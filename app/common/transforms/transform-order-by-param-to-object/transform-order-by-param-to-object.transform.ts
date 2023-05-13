@@ -1,5 +1,4 @@
 import { TransformFnParams } from 'class-transformer';
-import { InternalServerErrorException } from '@nestjs/common';
 import type { TransformedOrderByParam } from './transform-order-by-param-to-object.type';
 
 export const transformOrderByParamToObject = <EntityKeys extends string>({
@@ -9,8 +8,8 @@ export const transformOrderByParamToObject = <EntityKeys extends string>({
     return value;
   }
 
-  const entries: string[][] = value.map((item: string): string[] => {
-    return item.split(',').map((splitItem: string) => splitItem.trim());
+  const entries: string[][] = value.map((item) => {
+    return item.split(',').map((splitItem) => splitItem.trim());
   });
 
   return Object.fromEntries(entries);
